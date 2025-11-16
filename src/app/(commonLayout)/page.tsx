@@ -1,10 +1,17 @@
-import { Button } from "@/components/ui/button";
+import { Hero } from '@/components/modules/Home/Hero';
+import Specialties from '@/components/modules/Home/Specialities';
+import Steps from '@/components/modules/Home/Steps';
+import Testimonials from '@/components/modules/Home/Testimonials';
+import TopRatedDoctors from '@/components/modules/Home/TopRatedDoctors';
 
 export default function Home() {
-  return (
-      <div>
-          <h1>Hello World!!</h1>
-          <Button>Click me</Button>
-      </div>
-  );
+    return (
+        <div>
+            <Hero />
+            <Specialties />
+            <Steps />
+            <Testimonials />
+            <TopRatedDoctors />
+        </div>
+    );
 }
