@@ -1,6 +1,6 @@
 'use client';
 
-import { registerPatient } from '@/services/registerPatient';
+import { registerPatient } from '@/services/auth/registerPatient';
 import { useActionState } from 'react';
 import { Button } from './ui/button';
 import { Field, FieldDescription, FieldGroup, FieldLabel } from './ui/field';
