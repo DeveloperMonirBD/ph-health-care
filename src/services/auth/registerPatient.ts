@@ -55,7 +55,7 @@ export const registerPatient = async (_currentState: any, formData: any): Promis
         // if (!validationResult.success) {
         //     return {
         //         success: false,
-        //       errors: validatedFields.error.issues.map(issue => {
+        //       errors: validationResult.error.issues.map(issue => {
         //     return {
         //         field: issue.path[0],
         //         message: issue.message

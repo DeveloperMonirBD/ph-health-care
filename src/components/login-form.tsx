@@ -26,7 +26,7 @@ const LoginForm = () => {
                     {/* Email */}
                     <Field>
                         <FieldLabel htmlFor="email">Email</FieldLabel>
-                        <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+                        <Input id="email" name="email" type="email" placeholder="m@example.com"/>
 
                         {getFieldError('email') && <FieldDescription className="text-red-600">{getFieldError('email')}</FieldDescription>}
                     </Field>
@@ -34,7 +34,7 @@ const LoginForm = () => {
                     {/* Password */}
                     <Field>
                         <FieldLabel htmlFor="password">Password</FieldLabel>
-                        <Input id="password" name="password" type="password" placeholder="Enter your password" required />
+                        <Input id="password" name="password" type="password" placeholder="Enter your password"/>
 
                         {getFieldError('password') && <FieldDescription className="text-red-600">{getFieldError('password')}</FieldDescription>}
                     </Field>
