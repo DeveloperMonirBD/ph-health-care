@@ -1,11 +1,11 @@
 import React from 'react';
 
-const page = () => {
+const PatientDashboardPage = () => {
     return (
         <div>
-            
+            Patient Dashboard Page
         </div>
     );
 };
 
-export default page;
+export default PatientDashboardPage;
