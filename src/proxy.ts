@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -19,7 +19,7 @@ const commonProtectedRoutes: RouteConfig = {
 };
 
 const doctorProtectedRoutes: RouteConfig = {
-    patterns: [/^\/doctor/], // Routes starting with  /doctor*, /assitants, /appointments/*
+    patterns: [/^\/doctor/], // Routes starting with  /doctor*, /assistants, /appointments/*
     exact: [] // "/assistants"
 };
 
@@ -84,7 +84,7 @@ export async function proxy(request: NextRequest) {
     let userRole: UserRole | null = null;
 
     if (accessToken) {
-        const verifiedToken: string | jwt.JwtPayload = jwt.verify(accessToken, process.env.JWT_SECRET as string);
+        const verifiedToken: string | JwtPayload = jwt.verify(accessToken, process.env.JWT_SECRET as string);
 
         if (typeof verifiedToken === 'string') {
             cookieStore.delete('accessToken');

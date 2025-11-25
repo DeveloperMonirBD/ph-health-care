@@ -3,6 +3,8 @@
 import z from 'zod';
 import { parse } from "cookie";
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const loginValidationZodSchema = z
     .object({
@@ -22,6 +24,8 @@ const loginValidationZodSchema = z
 
 export const loginUser = async (_currentState: any, formData: any): Promise<any> => {
     try {
+        const redirectTo = formData.get('redirect') || null;
+
         let accessTokenObject: null | any = null;
         let refreshTokenObject: null | any = null;
 
@@ -97,10 +101,40 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
             sameSite: refreshTokenObject['SameSite'] || 'none'
         });
 
-        return result;
+        const verifiedToken: string | JwtPayload = jwt.verify(accessTokenObject.accessToken, process.env.JWT_SECRET as string);
 
-    } catch (err) {
-        console.log('Error logging in user:', err);
-        return { err: 'Login failed' };
+        if (typeof verifiedToken === 'string') {
+            throw new Error("Invalid token");
+        }
+
+        const userRole: any = verifiedToken.role;
+        type UserRole = 'ADMIN' | 'DOCTOR' | 'PATIENT';
+
+        const getDefaultDashboardRoute = (role: UserRole): string => {
+            if (role === 'ADMIN') {
+                return '/admin/dashboard';
+            }
+            if (role === 'DOCTOR') {
+                return '/doctor/dashboard';
+            }
+            if (role === 'PATIENT') {
+                return '/dashboard';
+            }
+            return '/';
+        };
+
+        const redirectPath = redirectTo ? redirectTo.toString() : getDefaultDashboardRoute(userRole);
+        redirect(redirectPath);
+
+        // return result;
+
+    } catch (error: any) {
+        // Re-throw NEXT_REDIRECT errors so Next.js can handle them
+        if (error?.digest?.startsWith('NEXT_REDIRECT')) {
+            throw error;
+        }
+            
+        console.log('Error logging in user:', error);
+        return { error: 'Login failed' };
     }
 };
