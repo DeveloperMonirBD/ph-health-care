@@ -5,6 +5,7 @@ import { parse } from "cookie";
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { getDefaultDashboardRoute, isValidRedirectForRole, UserRole } from '@/lib/auth-utils';
 
 const loginValidationZodSchema = z
     .object({
@@ -55,9 +56,6 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
                 'Content-Type': 'application/json'
             }
         })
-        // .then(res => res.json());
-
-        const result = await res.json();
 
         const setCookieHeaders = res.headers.getSetCookie();
 
@@ -107,26 +105,16 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
             throw new Error("Invalid token");
         }
 
-        const userRole: any = verifiedToken.role;
-        type UserRole = 'ADMIN' | 'DOCTOR' | 'PATIENT';
+        const userRole: UserRole = verifiedToken.role;
 
-        const getDefaultDashboardRoute = (role: UserRole): string => {
-            if (role === 'ADMIN') {
-                return '/admin/dashboard';
+        if (redirectTo) {
+            const requestedPath = redirectTo.toString();
+            if (isValidRedirectForRole(requestedPath, userRole)) {
+                redirect(requestedPath);
+            } else {
+                redirect(getDefaultDashboardRoute(userRole));
             }
-            if (role === 'DOCTOR') {
-                return '/doctor/dashboard';
-            }
-            if (role === 'PATIENT') {
-                return '/dashboard';
-            }
-            return '/';
-        };
-
-        const redirectPath = redirectTo ? redirectTo.toString() : getDefaultDashboardRoute(userRole);
-        redirect(redirectPath);
-
-        // return result;
+        }
 
     } catch (error: any) {
         // Re-throw NEXT_REDIRECT errors so Next.js can handle them

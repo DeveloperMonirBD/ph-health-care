@@ -1,78 +1,8 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { getDefaultDashboardRoute, getRouteOwner, isAuthRoute, UserRole } from './lib/auth-utils';
 
-type UserRole = 'ADMIN' | 'DOCTOR' | 'PATIENT';
-
-// exat: ["/my-profile", "settings"]
-// patterns: [/^\/dashboard, /^\/patient], // Routes starting with /dashboard/* /patient/*
-type RouteConfig = {
-    exact: string[];
-    patterns: RegExp[];
-};
-
-const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
-
-const commonProtectedRoutes: RouteConfig = {
-    exact: ['/my-profile', '/settings'],
-    patterns: [] // [/password/change-password, /password/reset-password => /password/*]
-};
-
-const doctorProtectedRoutes: RouteConfig = {
-    patterns: [/^\/doctor/], // Routes starting with  /doctor*, /assistants, /appointments/*
-    exact: [] // "/assistants"
-};
-
-const adminProtectedRoutes: RouteConfig = {
-    patterns: [/^\/admin/], // Routes starting with /admin/*
-    exact: [] // "/admins"
-};
-
-const patientProtectedRoutes: RouteConfig = {
-    patterns: [/^\/dashboard/], // Routes starting with /dashboard/*
-    exact: [] // "/dashboard"
-};
-
-const isAuthRoute = (pathname: string) => {
-    return authRoutes.some((route: string) => route === pathname);
-};
-
-const isRouteMatches = (pathname: string, routes: RouteConfig): boolean => {
-    if (routes.exact.includes(pathname)) {
-        return true;
-    }
-
-    return routes.patterns.some((pattern: RegExp) => pattern.test(pathname));
-};
-
-const getRouteOwner = (pathname: string): 'ADMIN' | 'DOCTOR' | 'PATIENT' | 'COMMON' | null => {
-    if (isRouteMatches(pathname, adminProtectedRoutes)) {
-        return 'ADMIN';
-    }
-    if (isRouteMatches(pathname, doctorProtectedRoutes)) {
-        return 'DOCTOR';
-    }
-    if (isRouteMatches(pathname, patientProtectedRoutes)) {
-        return 'PATIENT';
-    }
-    if (isRouteMatches(pathname, commonProtectedRoutes)) {
-        return 'COMMON';
-    }
-    return null;
-};
-
-const getDefaultDashboardRoute = (role: UserRole): string => {
-    if (role === 'ADMIN') {
-        return '/admin/dashboard';
-    }
-    if (role === 'DOCTOR') {
-        return '/doctor/dashboard';
-    }
-    if (role === 'PATIENT') {
-        return '/dashboard';
-    }
-    return '/';
-};
 
 // This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
