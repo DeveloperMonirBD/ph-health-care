@@ -1,10 +1,10 @@
 
-const page = () => {
+const ConsultationPage = () => {
     return (
         <div>
-            
+            Consultation Page
         </div>
     );
 };
 
-export default page;
+export default ConsultationPage;

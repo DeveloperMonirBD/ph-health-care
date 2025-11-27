@@ -7,7 +7,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from './ui/field';
 import { Input } from './ui/input';
 import { loginUser } from '@/services/auth/loginUser';
 
-const LoginForm = () => {
+const LoginForm = ({ redirect } : {redirect?: string}) => {
     const [state, formAction, isPending] = useActionState(loginUser, null);
 
     const getFieldError = (fieldName: string) => {
@@ -21,12 +21,13 @@ const LoginForm = () => {
 
     return (
         <form action={formAction}>
+            {redirect && <input type="hidden" name="redirect" value={redirect} />}
             <FieldGroup>
                 <div className="grid grid-cols-1 gap-4">
                     {/* Email */}
                     <Field>
                         <FieldLabel htmlFor="email">Email</FieldLabel>
-                        <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+                        <Input id="email" name="email" type="email" placeholder="m@example.com" />
 
                         {getFieldError('email') && <FieldDescription className="text-red-600">{getFieldError('email')}</FieldDescription>}
                     </Field>
@@ -34,7 +35,7 @@ const LoginForm = () => {
                     {/* Password */}
                     <Field>
                         <FieldLabel htmlFor="password">Password</FieldLabel>
-                        <Input id="password" name="password" type="password" placeholder="Enter your password" required />
+                        <Input id="password" name="password" type="password" placeholder="Enter your password" />
 
                         {getFieldError('password') && <FieldDescription className="text-red-600">{getFieldError('password')}</FieldDescription>}
                     </Field>

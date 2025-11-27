@@ -1,7 +1,13 @@
 import LoginForm from "@/components/login-form";
 
 
-const LoginPage = () => {
+const LoginPage = async ({
+    searchParams,
+}: {
+    searchParams?: Promise<{redirect?:string}>
+    }) => {
+    const { redirect } = await searchParams || {};
+    
     return (
         <>
             <div className="flex min-h-screen items-center justify-center">
@@ -10,9 +16,8 @@ const LoginPage = () => {
                         <h1 className="text-3xl font-bold">Welcome Back</h1>
                         <p className="text-gray-600">Log in to your account to continue</p>
                     </div>
-                    <LoginForm />
+                    <LoginForm redirect={redirect} />
                 </div>
-                
             </div>
         </>
     );
