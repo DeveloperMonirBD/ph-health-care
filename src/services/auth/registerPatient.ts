@@ -130,6 +130,6 @@ export const registerPatient = async (_currentState: any, formData: any): Promis
             throw error;
         }
         console.log('Error registering patient:', error);
-        return { success: false, error: 'Registration failed' };
+        return { success: false, message: `${process.env.NODE_ENV === 'development' ? error.message : 'Registration Failed. please try again.'}` };
     }
 };

@@ -16,10 +16,10 @@ const loginValidationZodSchema = z
             .min(1, 'Password is required')
             .min(8, 'Password must be at least 8 characters')
             .max(100, 'Password must not exceed 100 characters')
-            .regex(
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])/,
-                'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
-            )
+            // .regex(
+            //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])/,
+            //     'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+            // )
     })
     .strict();
 
@@ -108,7 +108,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         const userRole: UserRole = verifiedToken.role;
 
         if (!result.success) {
-            throw new Error("Login failed");
+            throw new Error(result.message || 'Login failed' );
         }
 
         if (redirectTo) {
@@ -119,8 +119,10 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
                 redirect(getDefaultDashboardRoute(userRole));
             }
         } else {
-            redirect(getDefaultDashboardRoute(userRole));
+            redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
         }
+
+
     } catch (error: any) {
         // Re-throw NEXT_REDIRECT errors so Next.js can handle them
         if (error?.digest?.startsWith('NEXT_REDIRECT')) {
@@ -128,6 +130,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         }
             
         console.log('Error logging in user:', error);
-        return { error: 'Login failed' };
+        // return { success: false, message: error.message };
+        return { success: false, message: `${process.env.NODE_ENV === 'development' ? error.message : 'Login Failed. You might have entered incorrect email or password.'}` };
     }
 };
