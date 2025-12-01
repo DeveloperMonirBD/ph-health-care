@@ -2,10 +2,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { getCookie } from '@/services/auth/tokenHandlers';
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
+import LogoutButton from './LogoutButton';
 
-const PublicNavbar = () => {
+const PublicNavbar = async () => {
     const navItems = [
         { name: 'Home', href: '/' },
         { name: 'Consultation', href: '/consultation' },
@@ -13,6 +15,8 @@ const PublicNavbar = () => {
         { name: 'Diagnostics', href: '/diagnostics' },
         { name: 'NGOs', href: '/ngos' }
     ];
+
+    const accessToken = await getCookie('accessToken');
 
     return (
         <header className=" flex items-center justify-between sticky top-0 z-50 w-full bg-background/95 px-4 shadow-md">
@@ -38,10 +42,14 @@ const PublicNavbar = () => {
                 </nav>
 
                 {/* Login Button */}
-                <div className="hidden md:block">
-                    <Link href="/login">
-                        <Button>Login</Button>
-                    </Link>
+                <div className="hidden md:block items-center space-x-2">
+                    {accessToken ? (
+                        <LogoutButton />
+                    ) : (
+                        <Link href="/login">
+                            <Button>Login</Button>
+                        </Link>
+                    )}
                 </div>
             </div>
 

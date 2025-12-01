@@ -2,7 +2,6 @@
 'use server';
 import z from 'zod';
 import { parse } from "cookie";
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { getDefaultDashboardRoute, isValidRedirectForRole, UserRole } from '@/lib/auth-utils';
