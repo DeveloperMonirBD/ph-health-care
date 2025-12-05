@@ -1,10 +1,7 @@
 import DashboardNavbar from '@/components/modules/Dashboard/DashboardNavbar';
 import DashboardSidebar from '@/components/modules/Dashboard/DashboardSidebar';
-// import LogoutButton from '@/components/modules/Shared/LogoutButton';
-// import { getCookie } from '@/services/auth/tokenHandlers';
 
 const CommonDashboardLayout = async ({ children }: { children: React.ReactNode }) => {
-    // const accessToken = await getCookie('accessToken');
     return (
         <div className="flex h-screen overflow-hidden">
             <DashboardSidebar />
@@ -14,7 +11,6 @@ const CommonDashboardLayout = async ({ children }: { children: React.ReactNode }
                     <div className='max-w-7xl'>{children}</div>
                 </main>
             </div>
-            {/* {accessToken && <LogoutButton />} */}
         </div>
     );
 };
