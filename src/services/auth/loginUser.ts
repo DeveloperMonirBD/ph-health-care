@@ -2,10 +2,10 @@
 'use server';
 import z from 'zod';
 import { parse } from "cookie";
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { getDefaultDashboardRoute, isValidRedirectForRole, UserRole } from '@/lib/auth-utils';
+import { setCookie } from './tokenHandlers';
 
 const loginValidationZodSchema = z
     .object({
@@ -16,10 +16,10 @@ const loginValidationZodSchema = z
             .min(1, 'Password is required')
             .min(8, 'Password must be at least 8 characters')
             .max(100, 'Password must not exceed 100 characters')
-            .regex(
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])/,
-                'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
-            )
+            // .regex(
+            //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])/,
+            //     'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+            // )
     })
     .strict();
 
@@ -83,17 +83,15 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
             throw new Error('Tokens not found in cookies');
         }
 
-        const cookieStore = await cookies();
-
-        cookieStore.set("accessToken", accessTokenObject.accessToken, {
+        await setCookie('accessToken', accessTokenObject.accessToken, {
             secure: true,
             httpOnly: true,
             maxAge: parseInt(accessTokenObject['Max-Age']) || 1000 * 60 * 60,
-            path: accessTokenObject.Path || "/",
-            sameSite: accessTokenObject['SameSite'] || "none"
-        })
+            path: accessTokenObject.Path || '/',
+            sameSite: accessTokenObject['SameSite'] || 'none'
+        });
 
-        cookieStore.set('refreshToken', refreshTokenObject.refreshToken, {
+        await setCookie('refreshToken', refreshTokenObject.refreshToken, {
             secure: true,
             httpOnly: true,
             maxAge: parseInt(refreshTokenObject['Max-Age']) || 1000 * 60 * 60 * 24 * 90,
@@ -110,19 +108,21 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         const userRole: UserRole = verifiedToken.role;
 
         if (!result.success) {
-            throw new Error("Login failed");
+            throw new Error(result.message || 'Login failed' );
         }
 
         if (redirectTo) {
             const requestedPath = redirectTo.toString();
             if (isValidRedirectForRole(requestedPath, userRole)) {
-                redirect(requestedPath);
+                redirect(`${requestedPath}?loggedIn=true`);
             } else {
-                redirect(getDefaultDashboardRoute(userRole));
+                redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
             }
         } else {
-            redirect(getDefaultDashboardRoute(userRole));
+            redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
         }
+
+
     } catch (error: any) {
         // Re-throw NEXT_REDIRECT errors so Next.js can handle them
         if (error?.digest?.startsWith('NEXT_REDIRECT')) {
@@ -130,6 +130,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         }
             
         console.log('Error logging in user:', error);
-        return { error: 'Login failed' };
+        // return { success: false, message: error.message };
+        return { success: false, message: `${process.env.NODE_ENV === 'development' ? error.message : 'Login Failed. You might have entered incorrect email or password.'}` };
     }
 };
