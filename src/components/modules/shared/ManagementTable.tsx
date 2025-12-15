@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -17,15 +19,19 @@ interface ManagementTableProps<T> {
     onDelete?: (row: T) => void;
     getRowKey: (row: T) => string;
     emptyMessage?: string;
-    isRefreshing?: false;
+    isRefreshing?: boolean;
 }
 
-function ManagementTable<T>({ data = [], columns = [], onView, onEdit, onDelete, getRowKey, emptyMessage = 'No recods found.', isRefreshing = false }: ManagementTableProps<T>) {
+// const ManagementTable<T> = (props: ManagementTableProps<T>) => {
+//   return <div>ManagementTable</div>;
+// };
+
+function ManagementTable<T>({ data = [], columns = [], onView, onEdit, onDelete, getRowKey, emptyMessage = 'No records found.', isRefreshing = false }: ManagementTableProps<T>) {
     const hasActions = onView || onEdit || onDelete;
     return (
         <>
             <div className="rounded-lg border relative">
-                {/* Refreshing Overlay  */}
+                {/* Refreshing Overlay */}
                 {isRefreshing && (
                     <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center z-10 rounded-lg">
                         <div className="flex flex-col items-center gap-2">
