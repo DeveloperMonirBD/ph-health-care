@@ -25,7 +25,7 @@ const SearchFilter = ({ placeholder = 'Search...', paramName = 'searchTerm' }: S
         const initialValue = searchParams.get(paramName) || "";
         if (debouncedValue === initialValue) {
             return;
-        }
+        } 
 
         if (debouncedValue) {
             params.set(paramName, debouncedValue); // ?searchTerm=debouncedValue
