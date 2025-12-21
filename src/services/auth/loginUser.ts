@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { getDefaultDashboardRoute, isValidRedirectForRole, UserRole } from '@/lib/auth-utils';
 import { setCookie } from './tokenHandlers';
+import { serverFetch } from '@/lib/server-fetch';
+import { zodValidator } from '@/lib/zodValidator';
 
 const loginValidationZodSchema = z
     .object({
@@ -30,31 +32,33 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         let accessTokenObject: null | any = null;
         let refreshTokenObject: null | any = null;
 
-        const loginData = {
+        const payload = {
             email: formData.get('email'),
             password: formData.get('password')
         };
 
-        const validatedFields = loginValidationZodSchema.safeParse(loginData);
+        // const validatedFields = loginValidationZodSchema.safeParse(loginData);
 
-        if (!validatedFields.success) {
-            return {
-                success: false,
-                errors: validatedFields.error.issues.map(issue => {
-                    return {
-                        field: issue.path[0],
-                        message: issue.message
-                    };
-                })
-            };
+        // if (!validatedFields.success) {
+        //     return {
+        //         success: false,
+        //         errors: validatedFields.error.issues.map(issue => {
+        //             return {
+        //                 field: issue.path[0],
+        //                 message: issue.message
+        //             };
+        //         })
+        //     };
+        // }
+
+        if (zodValidator(payload, loginValidationZodSchema).success === false) {
+            return zodValidator(payload, loginValidationZodSchema);
         }
 
-        const res = await fetch('http://localhost:5000/api/v1/auth/login', {
-            method: 'POST',
-            body: JSON.stringify(loginData),
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        const validatedPayload = zodValidator(payload, loginValidationZodSchema).data;
+
+        const res = await serverFetch.post('http://localhost:5000/api/v1/auth/login', {
+            body: JSON.stringify(validatedPayload)
         })
 
         const result = await res.json();

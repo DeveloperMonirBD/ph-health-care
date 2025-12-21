@@ -1,7 +1,7 @@
-import { error } from 'console';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { serverFetch } from '@/lib/server-fetch';
-import z, { success } from 'zod';
+import { zodValidator } from '@/lib/zodValidator';
+import z from 'zod';
 
 const createSpecialityZodSchema = z.object({
     title: z.string().min(3, 'Title must be at least 3 characters logn')
@@ -13,33 +13,39 @@ export async function createSpeciality(_prevState: any, formData: FormData) {
             title: formData.get('title') as string
         };
 
-        const validatedPayload = createSpecialityZodSchema.safeParse(payload);
+        // const validatedPayload = createSpecialityZodSchema.safeParse(payload);
 
-        if (!validatedPayload.success) {
-            return {
-                success: false,
-                errors: validatedPayload.error.issues.map(issue => {
-                    return {
-                        field: issue.path[0],
-                        message: issue.message
-                    };
-                })
-            };
+        // if (!validatedPayload.success) {
+        //     return {
+        //         success: false,
+        //         errors: validatedPayload.error.issues.map(issue => {
+        //             return {
+        //                 field: issue.path[0],
+        //                 message: issue.message
+        //             };
+        //         })
+        //     };
+        // }
 
-            const newFormData = new FormData();
-            newFormData.append('data', JSON.stringify(validatedPayload));
-
-            if (formData.get('file')) {
-                newFormData.append('file', formData.get('file') as Blob);
-            }
-
-            const response = await serverFetch.post('/specialties', {
-                body: newFormData
-            });
-
-            const result = await response.json();
-            return result;
+        if (zodValidator(payload, createSpecialityZodSchema).success === false) {
+            return zodValidator(payload, createSpecialityZodSchema);
         }
+
+        const validatedPayload = zodValidator(payload, createSpecialityZodSchema).data;
+
+        const newFormData = new FormData();
+        newFormData.append('data', JSON.stringify(validatedPayload));
+
+        if (formData.get('file')) {
+            newFormData.append('file', formData.get('file') as Blob);
+        }
+
+        const response = await serverFetch.post('/specialties', {
+            body: newFormData
+        });
+
+        const result = await response.json();
+        return result;
     } catch (error: any) {
         console.log(error);
         return { success: false, message: `${process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'}` };
@@ -51,19 +57,18 @@ export async function getSpecialities() {
         const response = await serverFetch.get('/specialties');
         const result = await response.json();
         return result;
-
     } catch (error: any) {
         console.log(error);
         return {
             success: false,
             message: `${process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'}`
-        }
+        };
     }
 }
 
 export async function deleteSpeciality(id: string) {
     try {
-        const response = await serverFetch.delete(`/specialties/${id}`)
+        const response = await serverFetch.delete(`/specialties/${id}`);
         const result = await response.json();
         return result;
     } catch (error: any) {
@@ -71,6 +76,6 @@ export async function deleteSpeciality(id: string) {
         return {
             success: false,
             message: `${process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'}`
-        }
-    } 
+        };
+    }
 }
