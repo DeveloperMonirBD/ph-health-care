@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+"use server"
+
 import { serverFetch } from '@/lib/server-fetch';
 import { zodValidator } from '@/lib/zodValidator';
-import z from 'zod';
-
-const createSpecialityZodSchema = z.object({
-    title: z.string().min(3, 'Title must be at least 3 characters logn')
-});
+import { createSpecialityZodSchema } from '@/zod/specialities.validation';
 
 export async function createSpeciality(_prevState: any, formData: FormData) {
     try {

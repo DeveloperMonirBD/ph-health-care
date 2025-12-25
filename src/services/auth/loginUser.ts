@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
-import z from 'zod';
 import { parse } from "cookie";
 import { redirect } from 'next/navigation';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -8,22 +7,8 @@ import { getDefaultDashboardRoute, isValidRedirectForRole, UserRole } from '@/li
 import { setCookie } from './tokenHandlers';
 import { serverFetch } from '@/lib/server-fetch';
 import { zodValidator } from '@/lib/zodValidator';
+import { loginValidationZodSchema } from '@/zod/auth.validation';
 
-const loginValidationZodSchema = z
-    .object({
-        email: z.string().min(1, 'Email is required').email('Please enter a valid email address').toLowerCase().trim().max(255, 'Email must not exceed 255 characters'),
-
-        password: z
-            .string()
-            .min(1, 'Password is required')
-            .min(8, 'Password must be at least 8 characters')
-            .max(100, 'Password must not exceed 100 characters')
-            // .regex(
-            //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])/,
-            //     'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
-            // )
-    })
-    .strict();
 
 export const loginUser = async (_currentState: any, formData: any): Promise<any> => {
     try {
@@ -57,8 +42,11 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
 
         const validatedPayload = zodValidator(payload, loginValidationZodSchema).data;
 
-        const res = await serverFetch.post('http://localhost:5000/api/v1/auth/login', {
-            body: JSON.stringify(validatedPayload)
+        const res = await serverFetch.post('/auth/login', {
+            body: JSON.stringify(validatedPayload),
+            headers: {
+                "Content-Type": "application/json"
+            }
         })
 
         const result = await res.json();

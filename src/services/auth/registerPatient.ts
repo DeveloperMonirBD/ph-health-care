@@ -1,81 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import z from 'zod';
 import { loginUser } from './loginUser';
 import { serverFetch } from '@/lib/server-fetch';
 import { zodValidator } from '@/lib/zodValidator';
+import { registerPatientValidationZodSchema } from '@/zod/auth.validation';
 
-const registerValidationZodSchema = z
-    .object({
-        name: z.string().min(1, { message: 'Name is required' }).min(2, { message: 'Name must be at least 2 characters' }).max(100, { message: 'Name must not exceed 100 characters' }).trim(),
-        address: z
-            .string()
-            .min(1, { message: 'Address is required' })
-            .min(5, { message: 'Address must be at least 5 characters' })
-            .max(255, { message: 'Address must not exceed 255 characters' })
-            .trim(),
-        email: z
-            .string()
-            .min(1, { message: 'Email is required' })
-            .email({ message: 'Please enter a valid email address' })
-            .max(255, { message: 'Email must not exceed 255 characters' })
-            .toLowerCase()
-            .trim(),
-        password: z
-            .string()
-            .min(1, { message: 'Password is required' })
-            .min(8, { message: 'Password must be at least 8 characters' })
-            .max(100, { message: 'Password must not exceed 100 characters' })
-            .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])/, {
-                message: 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
-            }),
-        confirmPassword: z
-            .string()
-            .min(1, { message: 'Confirm Password is required' })
-            .refine(val => val.length > 0, { message: 'Confirm Password is required' })
-    })
-    .refine((data: any) => data.password === data.confirmPassword, {
-        message: 'Passwords do not match',
-        path: ['confirmPassword']
-    })
-    .strict();
+
 
 // export type RegisterValidation = z.infer<typeof registerValidationZodSchema>;
 
 export const registerPatient = async (_currentState: any, formData: any): Promise<any> => {
     try {
-        // Validate form data using Zod schema
-        // const validationResult = registerValidationZodSchema.safeParse({
-        //     name: formData.get('name'),
-        //     address: formData.get('address'),
-        //     email: formData.get('email'),
-        //     password: formData.get('password'),
-        //     confirmPassword: formData.get('confirmPassword)
-        // });
-
-        // // Return validation errors if validation fails
-        // if (!validationResult.success) {
-        //     return {
-        //         success: false,
-        //       errors: validationResult.error.issues.map(issue => {
-        //     return {
-        //         field: issue.path[0],
-        //         message: issue.message
-        //     }
-        // }
-        //     };
-        // }
-
-        // const registerData = {
-        //     password: validationResult.data.password,
-        //     patient: {
-        //         name: validationResult.data.name,
-        //         email: validationResult.data.email,
-        //         address: validationResult.data.address
-        //     }
-        // };
-
         const payload = {
             name: formData.get('name'),
             address: formData.get('address'),
@@ -98,11 +34,11 @@ export const registerPatient = async (_currentState: any, formData: any): Promis
         //     };
         // }
 
-        if (zodValidator(payload, registerValidationZodSchema).success === false) {
-            return zodValidator(payload, registerValidationZodSchema);
+        if (zodValidator(payload, registerPatientValidationZodSchema).success === false) {
+            return zodValidator(payload, registerPatientValidationZodSchema);
         }
 
-        const validatedPayload: any = zodValidator(payload, registerValidationZodSchema).data;
+        const validatedPayload: any = zodValidator(payload, registerPatientValidationZodSchema).data;
 
         const registerData = {
             password: validatedPayload.password,
@@ -115,25 +51,23 @@ export const registerPatient = async (_currentState: any, formData: any): Promis
 
         const newFormData = new FormData();
 
-        newFormData.append("data", JSON.stringify(registerData));
-        
-        if (formData.get("file")) {
-            newFormData.append("file", formData.get("file") as Blob)
+        newFormData.append('data', JSON.stringify(registerData));
+
+        if (formData.get('file')) {
+            newFormData.append('file', formData.get('file') as Blob);
         }
 
-        const res = await serverFetch.post('http://localhost:5000/api/v1/user/create-patient', {
+        const res = await serverFetch.post('/user/create-patient', {
             body: newFormData
-        })
+        });
         // .then(res => res.json());
         const result = await res.json();
 
         if (result.success) {
-            await loginUser(_currentState, formData)
+            await loginUser(_currentState, formData);
         }
 
         return result;
-
-        
     } catch (error: any) {
         // Re-throw NEXT_REDIRECT errors so Next.js can handle them
         if (error?.digest?.startsWith('NEXT_REDIRECT')) {
