@@ -3,7 +3,6 @@
 
 import { serverFetch } from '@/lib/server-fetch';
 import { zodValidator } from '@/lib/zodValidator';
-
 import { createDoctorZodSchema, updateDoctorZodSchema } from '@/zod/doctors.validation';
 import { IDoctor } from '../types/doctor.interface';
 
@@ -23,6 +22,7 @@ export async function createDoctor(_prevState: any, formData: FormData) {
             designation: formData.get('designation') as string,
             password: formData.get('password') as string
         };
+
         if (zodValidator(payload, createDoctorZodSchema).success === false) {
             return zodValidator(payload, createDoctorZodSchema);
         }
@@ -49,6 +49,7 @@ export async function createDoctor(_prevState: any, formData: FormData) {
                 designation: validatedPayload.designation
             }
         };
+
         const newFormData = new FormData();
         newFormData.append('data', JSON.stringify(newPayload));
 
