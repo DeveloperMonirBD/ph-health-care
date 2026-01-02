@@ -3,8 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Search } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
 interface SearchFilterProps {
