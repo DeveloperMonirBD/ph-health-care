@@ -3,6 +3,9 @@
 import { IDoctor } from '@/services/types/doctor.interface';
 import { Star } from 'lucide-react';
 import { Column } from '../../Shared/ManagementTable';
+import { UserInfoCell } from '../../Shared/cell/UserInfoCell';
+import { StatusBadgeCell } from '../../Shared/cell/StatusBadgeCell';
+import { DateCell } from '../../Shared/cell/DateCell';
 
 export const DoctorsColumns: Column<IDoctor>[] = [
     {

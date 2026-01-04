@@ -1,14 +1,17 @@
 import DoctorsManagementHeader from '@/components/modules/Admin/DoctorsManagement/DoctorsManagementHeader';
+import DoctorsTable from '@/components/modules/Admin/DoctorsManagement/DoctorsTable';
 import RefreshButton from '@/components/modules/Shared/RefreshButton';
 import SearchFilter from '@/components/modules/Shared/SearchFilter';
 import SelectFilter from '@/components/modules/Shared/selectFilter';
+import { TableSkeleton } from '@/components/modules/Shared/TableSkeleton';
+import { getDoctors } from '@/services/admin/doctorManagement';
 import { getSpecialities } from '@/services/admin/specialitiesManagement';
 import { ISpecialty } from '@/services/types/specialities.interface';
-
+import { Suspense } from 'react';
 
 const AdminDoctorsManagementPage = async () => {
     const specialitiesResult = await getSpecialities();
-    console.log(specialitiesResult);
+    const doctorsResult = await getDoctors();
 
     return (
         <div className="space-y-6">
@@ -28,9 +31,9 @@ const AdminDoctorsManagementPage = async () => {
                 <RefreshButton />
             </div>
 
-            {/* <Suspense fallback={<TableSkeleton columns={2} rows={10} />}>
-                <SpecialitiesTable specialities={specialitiesResult.data} />
-            </Suspense> */}
+            <Suspense fallback={<TableSkeleton columns={10} rows={10} />}>
+                <DoctorsTable doctors={doctorsResult.data} />
+            </Suspense>
         </div>
     );
 };
