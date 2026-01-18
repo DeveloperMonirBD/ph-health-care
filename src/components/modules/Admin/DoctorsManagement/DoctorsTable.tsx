@@ -58,7 +58,7 @@ const DoctorsTable = ({ doctors, specialities }: DoctorTableProps) => {
     };
 
     return (
-        <>
+        <div className='min-h-[600px]'>
             <ManagementTable data={doctors} columns={DoctorsColumns} onView={handleView} onEdit={handleEdit} onDelete={handleDelete} getRowKey={doctor => doctor.id!} emptyMessage="No doctors found" />
 
             {/* Edit Doctor Form Dialog */}
@@ -85,7 +85,7 @@ const DoctorsTable = ({ doctors, specialities }: DoctorTableProps) => {
                 description={`Are you sure you want to delete ${deletingDoctor?.name}? This action cannot be undone.`}
                 isDeleting={isDeleting}
             />
-        </>
+        </div>
     );
 };
 
