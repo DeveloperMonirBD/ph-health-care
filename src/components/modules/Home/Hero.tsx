@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 // import { HeroProps } from '@/types/heroProps';
 import { LargeSparkleIcon, SparkleIcon } from '@/assets/icons/SparkleIcon';
+import { HeroProps } from '@/services/types/heroProps';
 
 export function Hero({
     badge = {
