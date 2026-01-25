@@ -37,7 +37,6 @@ const SpecialtyMultiSelect = ({
 
             {/* Hidden Inputs for Form Submission */}
             <Input type="hidden" name="specialties" value={JSON.stringify(isEdit ? getNewSpecialties() : selectedSpecialtyIds)} />
-            
             {isEdit && <Input type="hidden" name="removeSpecialties" value={JSON.stringify(removedSpecialtyIds)} />}
 
             {/* Selected Specialties Display */}
