@@ -8,7 +8,7 @@ import { IDoctor } from '../types/doctor.interface';
 
 export async function createDoctor(_prevState: any, formData: FormData) {
     try {
-        const payload: IDoctor = {
+        const validationPayload: IDoctor = {
             name: formData.get('name') as string,
             email: formData.get('email') as string,
             contactNumber: formData.get('contactNumber') as string,
@@ -23,35 +23,44 @@ export async function createDoctor(_prevState: any, formData: FormData) {
             password: formData.get('password') as string
         };
 
-        if (zodValidator(payload, createDoctorZodSchema).success === false) {
-            return zodValidator(payload, createDoctorZodSchema);
-        }
+        const validatedPayload = zodValidator(validationPayload, createDoctorZodSchema);
 
-        const validatedPayload = zodValidator(payload, createDoctorZodSchema).data;
+     if (!validatedPayload.success && validatedPayload.errors) {
+         return {
+             success: validatedPayload.success,
+             message: 'Validation failed',
+             formData: validationPayload,
+             errors: validatedPayload.errors
+         };
+     }
 
-        if (!validatedPayload) {
-            throw new Error('Invalid payload');
-        }
-
-        const newPayload = {
-            password: validatedPayload.password,
-            doctor: {
-                name: validatedPayload.name,
-                email: validatedPayload.email,
-                contactNumber: validatedPayload.contactNumber,
-                address: validatedPayload.address,
-                registrationNumber: validatedPayload.registrationNumber,
-                experience: validatedPayload.experience,
-                gender: validatedPayload.gender,
-                appointmentFee: validatedPayload.appointmentFee,
-                qualification: validatedPayload.qualification,
-                currentWorkingPlace: validatedPayload.currentWorkingPlace,
-                designation: validatedPayload.designation
-            }
-        };
+     if (!validatedPayload.data) {
+         return {
+             success: false,
+             message: 'Validation failed',
+             formData: validationPayload
+         };
+     }
+     const backendPayload = {
+         password: validatedPayload.data.password,
+         doctor: {
+             name: validatedPayload.data.name,
+             email: validatedPayload.data.email,
+             contactNumber: validatedPayload.data.contactNumber,
+             address: validatedPayload.data.address,
+             registrationNumber: validatedPayload.data.registrationNumber,
+             experience: validatedPayload.data.experience,
+             gender: validatedPayload.data.gender,
+             appointmentFee: validatedPayload.data.appointmentFee,
+             qualification: validatedPayload.data.qualification,
+             currentWorkingPlace: validatedPayload.data.currentWorkingPlace,
+             designation: validatedPayload.data.designation,
+             specialties: validatedPayload.data.specialties
+         }
+     };
 
         const newFormData = new FormData();
-        newFormData.append('data', JSON.stringify(newPayload));
+        newFormData.append('data', JSON.stringify(backendPayload));
 
         if (formData.get('file')) {
             newFormData.append('file', formData.get('file') as Blob);
