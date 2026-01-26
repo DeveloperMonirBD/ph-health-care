@@ -11,7 +11,7 @@ import { DateCell } from '../../Shared/cell/DateCell';
 export const DoctorsColumns: Column<IDoctor>[] = [
     {
         header: 'Doctor',
-        accessor: doctor => <UserInfoCell name={doctor.name} email={doctor.email} photo={doctor.profilePhoto} />
+        accessor: doctor => <UserInfoCell name={doctor.name} email={doctor.email} photo={doctor.profilePhoto as string} />
     },
     {
         header: 'Specialties',
