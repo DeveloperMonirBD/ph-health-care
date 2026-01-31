@@ -24,6 +24,7 @@ const DoctorsManagementHeader = ({doctor, specialities}: DoctorsManagementHeader
         });
     };
 
+    // form reset
     const [dialogKey, setDialogKey] = useState(0);
 
     const handleOpenDialog = () => {

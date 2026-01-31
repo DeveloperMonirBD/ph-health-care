@@ -87,6 +87,7 @@ export async function createDoctor(_prevState: any, formData: FormData) {
         });
 
         const result = await response.json();
+        console.log(result)
 
         return result;
     } catch (error: any) {
@@ -221,6 +222,7 @@ export async function softDeleteDoctor(id: string) {
         };
     }
 }
+
 export async function deleteDoctor(id: string) {
     try {
         const response = await serverFetch.delete(`/doctor/${id}`);
