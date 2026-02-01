@@ -11,7 +11,8 @@ import { DateCell } from '../../Shared/cell/DateCell';
 export const DoctorsColumns: Column<IDoctor>[] = [
     {
         header: 'Doctor',
-        accessor: doctor => <UserInfoCell name={doctor.name} email={doctor.email} photo={doctor.profilePhoto as string} />
+        accessor: doctor => (<UserInfoCell name={doctor.name} email={doctor.email} photo={doctor.profilePhoto as string} />),
+        sortKey: 'name',
     },
     {
         header: 'Specialties',
@@ -50,11 +51,13 @@ export const DoctorsColumns: Column<IDoctor>[] = [
     },
     {
         header: 'Experience',
-        accessor: doctor => <span className="text-sm font-medium">{doctor.experience ?? 0} years</span>
+        accessor: doctor => (<span className="text-sm font-medium">{doctor.experience ?? 0} years</span>),
+        sortKey: 'experience',
     },
     {
         header: 'Fee',
-        accessor: doctor => <span className="text-sm font-semibold text-green-600">${doctor.appointmentFee}</span>
+        accessor: doctor => (<span className="text-sm font-semibold text-green-600">${doctor.appointmentFee}</span>),
+        sortKey: 'appointmentFee',
     },
     {
         header: 'Rating',
@@ -63,7 +66,8 @@ export const DoctorsColumns: Column<IDoctor>[] = [
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm font-medium">{doctor.averageRating!.toFixed(1)}</span>
             </div>
-        )
+        ),
+        sortKey: 'averageRating',
     },
     {
         header: 'Gender',
@@ -75,6 +79,7 @@ export const DoctorsColumns: Column<IDoctor>[] = [
     },
     {
         header: 'Joined',
-        accessor: doctor => <DateCell date={doctor.createdAt} />
+        accessor: doctor => <DateCell date={doctor.createdAt} />,
+        sortKey: 'createdAt',
     }
 ];
